@@ -1,9 +1,7 @@
 #include <stdint.h>
-// #include <stdbool.h>
 #include <unistd.h>
 #include <sys/wait.h>
 #include <stdlib.h>
-// #include <ctype.h>
 #include <fcntl.h>
 #include <string.h>
 
@@ -13,14 +11,14 @@ int main(int argc, char** argv) {
 	(void)argc;
 	(void)argv;
 
-	char progpath[1024]; // путь к директории
-	ssize_t len = readlink("/proc/self/exe", progpath, sizeof(progpath) - 1); // путь к программе
+	char progpath[1024];
+	ssize_t len = readlink("/proc/self/exe", progpath, sizeof(progpath) - 1);
 	if (len == -1) {
 		const char msg[] = "error: failed to read full program path\n";
 		write(STDERR_FILENO, msg, sizeof(msg));
 		exit(EXIT_FAILURE);
 	}
-	while (progpath[len] != '/') len--; // имя программы обрезается
+	while (progpath[len] != '/') len--;
 	progpath[len] = '\0';
 
 	int pipe1[2], pipe2[2];
@@ -30,9 +28,8 @@ int main(int argc, char** argv) {
 		exit(EXIT_FAILURE);
 	}
 
-	char path[1024]; // путь к ребёнку
+	char path[1024];
 
-	// progpath + "/" + CHILD_PROGRAM_NAME
 	size_t i;
 	for (i = 0; i < strlen(progpath) && i + 1 < sizeof(path); i++)
 		path[i] = progpath[i];
@@ -86,12 +83,7 @@ int main(int argc, char** argv) {
 	} break;
 
 	case 0: {
-		//pid_t pid = getpid();
-		//char msg[64];
-		//const int32_t length = snprintf(msg, sizeof(msg),
-		//	"%d: congratulations, it's a child1!\n", pid);
-		//write(STDOUT_FILENO, msg, length);
-
+		
 		close(pipe1[1]);
 		close(pipe2[0]);
 		close(pipe2[1]);
@@ -126,12 +118,7 @@ int main(int argc, char** argv) {
 	} break;
 
 	case 0: {
-		//pid_t pid = getpid();
-		//char msg[64];
-		//const int32_t length = snprintf(msg, sizeof(msg),
-		//	"%d: congratulations, it's a child2!\n", pid);
-		//write(STDOUT_FILENO, msg, length);
-
+		
 		close(pipe1[0]);
 		close(pipe1[1]);
 		close(pipe2[1]);
@@ -155,13 +142,7 @@ int main(int argc, char** argv) {
 	default:
 		break;
 	}
-
-	// pid_t pid = getpid();
-	// char msg[64];
-	// const int32_t length = snprintf(msg, sizeof(msg),
-	//	"%d: unfortunately, you are a %d's parent\n", pid, child);
-	// write(STDOUT_FILENO, msg, length);
-
+	
 	char buf[4096];
 	ssize_t bytes;
 
